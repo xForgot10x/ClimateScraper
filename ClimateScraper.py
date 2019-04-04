@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 
 def win_safe_name(cityname):
     """Edit the string so that it can be used as a valid file name in
-    Windows
+    Windows.
     """
     cityname = cityname.strip()
     if cityname.endswith("."):
@@ -82,7 +82,7 @@ for year in range(2001, 2019):
             quit()
         soup = BeautifulSoup(uh, "html.parser")
         
-        # Get monthly average temperature direcrly from the page
+        # Get monthly average temperature directly from the page
         try:
             monthly_avg = re.findall("наблюдений: (\S+)°", soup.get_text())[0]
         except:
@@ -109,37 +109,41 @@ for year in range(2001, 2019):
             row = [item.text for item in td]
             # Sanity check, need to deal with missing data
             if len(row) == 5 and row[0] and row[1] and row[2]:
-                # Checking daily mins
-                if float(row[0]) >= 20.0:
+                # Put data of interest into variables for readability
+                mins = float(row[0])
+                avgs = float(row[1])
+                maxs = float(row[2])
+                # Checking daily min temperatures
+                if mins >= 20.0:
                     daily_low += 1
-                elif float(row[0]) <= -30.0:
+                elif mins <= -30.0:
                     daily_low_0 += 1
                     daily_low_10 += 1
                     daily_low_20 += 1
                     daily_low_30 += 1
-                elif float(row[0]) <= -20.0:
+                elif mins <= -20.0:
                     daily_low_0 += 1
                     daily_low_10 += 1
                     daily_low_20 += 1
-                elif float(row[0]) <= -10.0:
+                elif mins <= -10.0:
                     daily_low_0 += 1
                     daily_low_10 += 1
-                elif float(row[0]) <= 0.0:
+                elif mins <= 0.0:
                     daily_low_0 += 1
                 # Checking daily averages
-                if float(row[1]) >= 20.0:
+                if avgs >= 20.0:
                     daily_avg += 1
-                elif float(row[1]) <= 0.0:
+                elif avgs <= 0.0:
                     daily_avg_0 += 1
                 # Checking daily max temperatures
-                if float(row[2]) >= 32.0:
+                if maxs >= 32.0:
                     daily_max_30 += 1
                     daily_max_32 += 1
-                elif float(row[2]) >= 30.0:
+                elif maxs >= 30.0:
                     daily_max_30 += 1
             else:
                 missing_data += 1
-        # Account for leap days (the table has 29 rows for February)
+        # Account for leap years (the table has 29 rows for February)
         if month == 2 and year%4 != 0:
             missing_data -= 1
         
